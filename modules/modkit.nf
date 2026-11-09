@@ -6,7 +6,7 @@ process MODKIT_PILEUP {
     tuple val(meta), path(mapped_bam), path(mapped_bam_bai), path(assembly)
 
     output:
-    tuple val(assembly.baseName), val(meta), path(assembly), path("modkit_pileup_output.bed")
+    tuple val(meta), path("modkit_pileup_output.bed"), path(assembly)
 
     script:
     filter_threshold = params.automatic_threshold_modkit ? '' : "--filter-threshold ${params.filter_threshold_modkit}"
@@ -27,7 +27,7 @@ process MODKIT_PILEUP_BEDGRAPHS {
     tuple val(meta), path(mapped_bam), path(mapped_bam_bai), path(assembly)
 
     output:
-    tuple val(assembly.baseName), path("bedgraphs")
+    tuple val(meta), path("bedgraphs"), path(assembly)
 
     script:
     """
@@ -45,10 +45,10 @@ process CUSTOM_BEDGRAPHS {
     // additionally, it saves the positions with a high methylation levels (>0.5) in tsv tables, one for each modification (6mA, 5mC and 4mC).
 
     input:
-    tuple val(assembly_name), val(meta), path(assembly), path(bed_file)
+    tuple val(meta), path(bed_file), path(assembly)
 
     output:
-    tuple val(assembly_name), path("bedgraphs_customized"), path("modifications_tables")
+    tuple val(meta), path("bedgraphs_customized"), path("modifications_tables")
 
     script:
     """
@@ -70,10 +70,10 @@ process MODKIT_FIND_MOTIFS {
     //errorStrategy 'ignore'
 
     input:
-    tuple val(assembly_name), val(meta), path(assembly), path(bed_file)
+    tuple val(meta), path(bed_file), path(assembly)
 
     output:
-    tuple val(assembly_name), path("modkit_motifs.tsv")
+    tuple val(meta), path("modkit_motifs.tsv")
 
     script:
     """

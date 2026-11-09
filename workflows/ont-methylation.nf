@@ -27,15 +27,20 @@ workflow ONT_METHYLATION {
     ch_samplesheet
 
     main:
-    ch_samplesheet.view { sample -> "Input: ${sample}" }
-
-    fastq_files = BAM2FASTQ(ch_samplesheet)
+    fastq_ch = BAM2FASTQ(ch_samplesheet)
     
-    ZIPFASTQ(fastq_files)
+    ZIPFASTQ(fastq_ch)
 
-    mapped_bams = MINIMAP2(BAM2FASTQ.out)
+    mapped_bams_ch = MINIMAP2(BAM2FASTQ.out)
 
-    bed_files = MODKIT_PILEUP(mapped_bams)
+    pileup_ch = MODKIT_PILEUP(mapped_bams_ch)
+    //MODKIT_PILEUP_BEDGRAPHS(mapped_bams_ch)
+    
+    CUSTOM_BEDGRAPHS(pileup_ch)
+
+    MODKIT_FIND_MOTIFS(pileup_ch)
+
+    COMPUTE_STATISTICS(pileup_ch)
 }
 
 // if (params.fasta && params.list) { fasta_input_ch = channel
