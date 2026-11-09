@@ -28,11 +28,23 @@ workflow PIPELINE_INITIALISATION {
     input
 
     main:
-    log.info "Initialising ONT methylation pipeline"
-    log.info "Input samplesheet: ${input}"
+    samples_ch = channel
+        .fromPath(input, checkIfExists: true)
+        .splitCsv(header: true)
+        .map { row ->
+            def meta = [
+                id: row.sample
+            ]
+
+            tuple(
+                meta,
+                file(row.bam, checkIfExists: true),
+                file(row.assembly, checkIfExists: true)
+            )
+        }
 
     emit:
-    samplesheet = input
+    samplesheet = samples_ch
 }
 
 /*
@@ -45,7 +57,8 @@ workflow PIPELINE_COMPLETION {
 
     main:
     workflow.onComplete {
-        log.info "Pipeline completed: ${workflow.success}"
-        log.info "Duration: ${workflow.duration}"
+        //log.info "Pipeline completed: ${workflow.success}"
+        //log.info "Duration: ${workflow.duration}"
+        log.info "ONT methylation workflow initialised successfully"
     }
 }
