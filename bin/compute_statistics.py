@@ -35,14 +35,14 @@ def compute_statistics_modifications(filtered_table, results_folder):
     # % of methylated a (6mA)
     a_modifications = filtered_table[filtered_table["Modification"] == 'a']
         
-    a_modification_counts = a_modifications["Contig"].value_counts().reset_index()
+    a_modification_counts = a_modifications["Contig"].astype(str).value_counts().reset_index()
     a_modification_counts.columns = ['Contig', 'tot_6mA']
     a_modification_counts['tot_a'] = a_modification_counts['Contig'].map(lambda x: reference_genome[x].lower().count('a') if x in reference_genome else None)
     a_modification_counts['%_methylation'] = (a_modification_counts['tot_6mA'] / a_modification_counts['tot_a']) * 100
         
     # % of methylated c (5mC)
     c5_modifications = filtered_table[filtered_table["Modification"] == 'm']
-    c5_modification_counts = c5_modifications["Contig"].value_counts().reset_index()
+    c5_modification_counts = c5_modifications["Contig"].astype(str).value_counts().reset_index()
     c5_modification_counts.columns = ['Contig', 'tot_5mC']
     c5_modification_counts['tot_c'] = c5_modification_counts['Contig'].map(lambda x: reference_genome[x].lower().count('c') if x in reference_genome else None)
     c5_modification_counts['%_methylation'] = (c5_modification_counts['tot_5mC'] / c5_modification_counts['tot_c']) * 100
@@ -50,7 +50,7 @@ def compute_statistics_modifications(filtered_table, results_folder):
         
     # % of methylated c (4mC)
     c4_modifications = filtered_table[filtered_table["Modification"] == '21839']
-    c4_modification_counts = c4_modifications["Contig"].value_counts().reset_index()
+    c4_modification_counts = c4_modifications["Contig"].astype(str).value_counts().reset_index()
     c4_modification_counts.columns = ['Contig', 'tot_4mC']
     c4_modification_counts['tot_c'] = c4_modification_counts['Contig'].map(lambda x: reference_genome[x].lower().count('c') if x in reference_genome else None)
     c4_modification_counts['%_methylation'] = (c4_modification_counts['tot_4mC'] / c4_modification_counts['tot_c']) * 100
