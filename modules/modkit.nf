@@ -23,6 +23,7 @@ process MODKIT_PILEUP_BEDGRAPHS {
     label 'modkit'
     // execute the modkit pileup command to obtain the bedgraphs
     cpus 8
+    memory '32 GB'
     
     input:
     tuple val(meta), path(mapped_bam), path(mapped_bam_bai), path(assembly)
@@ -70,6 +71,7 @@ process MODKIT_FIND_MOTIFS {
     // find motifs from the output of modkit pileup
     //errorStrategy 'ignore'
     cpus 8
+    memory '32 GB'
 
     input:
     tuple val(meta), path(bed_file), path(assembly)
