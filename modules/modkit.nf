@@ -3,10 +3,10 @@ process modkit_pileup {
     // execute the modkit pileup command
     
     input:
-    tuple val(sample_id), path(mapped_bam), path(mapped_bam_bai), path(reference)
+    tuple val(sample), path(mapped_bam), path(mapped_bam_bai), path(assembly)
 
     output:
-    tuple val(reference.baseName), val(sample_id), path(reference), path("modkit_pileup_output.bed")
+    tuple val(assembly.baseName), val(sample), path(assembly), path("modkit_pileup_output.bed")
 
     script:
     filter_threshold = params.automatic_threshold_modkit ? '' : "--filter-threshold ${params.filter_threshold_modkit}"
@@ -24,10 +24,10 @@ process modkit_pileup_bedgraphs {
     // execute the modkit pileup command to obtain the bedgraphs
     
     input:
-    tuple val(sample_id), path(mapped_bam), path(mapped_bam_bai), path(reference)
+    tuple val(sample), path(mapped_bam), path(mapped_bam_bai), path(assembly)
 
     output:
-    tuple val(reference.baseName), path("bedgraphs")
+    tuple val(assembly.baseName), path("bedgraphs")
 
     script:
     """
@@ -45,17 +45,17 @@ process custom_bedgraphs {
     // additionally, it saves the positions with a high methylation levels (>0.5) in tsv tables, one for each modification (6mA, 5mC and 4mC).
 
     input:
-    tuple val(reference_name), val(sample_id), path(reference), path(bed_file)
+    tuple val(assembly_name), val(sample), path(assembly), path(bed_file)
 
     output:
-    tuple val(reference_name), path("bedgraphs_customized"), path("modifications_tables")
+    tuple val(assembly_name), path("bedgraphs_customized"), path("modifications_tables")
 
     script:
     """
     mkdir -p bedgraphs_customized
     mkdir -p modifications_tables
 
-    custom_bedgraphs.py ${bed_file} ${reference} . --percent_cutoff ${params.percent_cutoff_modification_table}
+    custom_bedgraphs.py ${bed_file} ${assembly} . --percent_cutoff ${params.percent_cutoff_modification_table}
     """
     stub:
     """
@@ -70,14 +70,14 @@ process modkit_find_motifs {
     //errorStrategy 'ignore'
 
     input:
-    tuple val(reference_name), val(sample_id), path(reference), path(bed_file)
+    tuple val(assembly_name), val(sample), path(assembly), path(bed_file)
 
     output:
-    tuple val(reference_name), path("modkit_motifs.tsv")
+    tuple val(assembly_name), path("modkit_motifs.tsv")
 
     script:
     """
-    modkit find-motifs -t ${task.cpus} --in-bedmethyl ${bed_file} --ref ${reference} -o modkit_motifs.tsv
+    modkit find-motifs -t ${task.cpus} --in-bedmethyl ${bed_file} --ref ${assembly} -o modkit_motifs.tsv
     """
     stub:
     """
@@ -88,10 +88,10 @@ process modkit_find_motifs {
 
 process publish_results_meta {
     label 'publish'
-    publishDir "${params.outdir}/${sample_id}/bins/${reference_name}", mode: 'copy'
+    publishDir "${params.outdir}/${sample}/bins/${assembly_name}", mode: 'copy'
 
     input:
-    tuple val(reference_name), val(sample_id), path(reference), 
+    tuple val(assembly_name), val(sample), path(assembly), 
           path(bed_file), path(pileup_bedgraphs), path(custom_bedgraphs), path(modifications_tables), path(statistics)
 
     output:
@@ -104,10 +104,10 @@ process publish_results_meta {
 
 process publish_results_motifs_meta {
     label 'publish'
-    publishDir "${params.outdir}/${sample_id}/bins/${reference_name}", mode: 'copy'
+    publishDir "${params.outdir}/${sample}/bins/${assembly_name}", mode: 'copy'
 
     input:
-    tuple val(reference_name), val(sample_id), path(reference), 
+    tuple val(assembly_name), val(sample), path(assembly), 
           path(bed_file), path(motifs)
 
     output:
@@ -120,10 +120,10 @@ process publish_results_motifs_meta {
 
 process publish_results {
     label 'publish'
-    publishDir "${params.outdir}/${sample_id}", mode: 'copy'
+    publishDir "${params.outdir}/${sample}", mode: 'copy'
 
     input:
-    tuple val(reference_name), val(sample_id), path(reference), 
+    tuple val(assembly_name), val(sample), path(assembly), 
           path(bed_file), path(pileup_bedgraphs), path(custom_bedgraphs), path(modifications_tables), path(statistics)
 
     output:
@@ -136,10 +136,10 @@ process publish_results {
 
 process publish_results_motifs {
     label 'publish'
-    publishDir "${params.outdir}/${sample_id}", mode: 'copy'
+    publishDir "${params.outdir}/${sample}", mode: 'copy'
 
     input:
-    tuple val(reference_name), val(sample_id), path(reference), 
+    tuple val(assembly_name), val(sample), path(assembly), 
           path(bed_file), path(motifs)
 
     output:

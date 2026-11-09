@@ -3,77 +3,77 @@ process bam2fastq {
     label 'minimap2'
 
     input:
-    tuple val(sample_id), path(bam_file)
+    tuple val(sample), path(bam)
 
     output:
-    tuple val(sample_id), path("${sample_id}.fastq")
+    tuple val(sample), path("${sample}.fastq")
 
     script:
     """
-    samtools fastq ${bam_file} -T MM,ML > ${sample_id}.fastq
+    samtools fastq ${bam} -T MM,ML > ${sample}.fastq
     """
     stub:
     """
-    touch ${sample_id}.fastq    
+    touch ${sample}.fastq    
     """
 }
 
 process zipfastq {
     // zip fastq file
     label 'minimap2'
-    publishDir  "${params.outdir}/${sample_id}", mode:'copy'
+    publishDir  "${params.outdir}/${sample}", mode:'copy'
         
     input:
-    tuple val(sample_id), path(fastq_file)
+    tuple val(sample), path(fastq_file)
 
     output:
-    path "${sample_id}.fastq.gz"
+    path "${sample}.fastq.gz"
 
     script:
     """
-    gzip -c ${fastq_file} > ${sample_id}.fastq.gz
+    gzip -c ${fastq_file} > ${sample}.fastq.gz
     """
     stub:
     """
-    touch ${sample_id}.fastq.gz
+    touch ${sample}.fastq.gz
     """
 }
 
 process minimap2 {
     label 'minimap2'
     // align with minimap2 
-    publishDir  "${params.outdir}/${sample_id}", mode:'copy'
+    publishDir  "${params.outdir}/${sample}", mode:'copy'
 
     input:
-    tuple val(sample_id), path(fastq_file), path(reference)
+    tuple val(sample), path(fastq_file), path(assembly)
 
     output:
-    tuple val(sample_id), path("${sample_id}_methylation_mapped.bam"), path("${sample_id}_methylation_mapped.bam.bai"), path(reference)
+    tuple val(sample), path("${sample}_methylation_mapped.bam"), path("${sample}_methylation_mapped.bam.bai"), path(assembly)
 
     script:
     """
-    minimap2 -t ${task.cpus} --secondary=no -ax map-ont -y ${reference} ${fastq_file} | \
+    minimap2 -t ${task.cpus} --secondary=no -ax map-ont -y ${assembly} ${fastq_file} | \
     samtools view -b | \
-    samtools sort -@ ${task.cpus} -o ${sample_id}_methylation_mapped.bam
-    samtools index ${sample_id}_methylation_mapped.bam
+    samtools sort -@ ${task.cpus} -o ${sample}_methylation_mapped.bam
+    samtools index ${sample}_methylation_mapped.bam
     """
     stub:
     """
-    touch ${sample_id}_methylation_mapped.bam
-    touch ${sample_id}_methylation_mapped.bam.bai
+    touch ${sample}_methylation_mapped.bam
+    touch ${sample}_methylation_mapped.bam.bai
     """
 }
 
 
 process split_bam_by_bin {
     label 'minimap2'
-    publishDir "${params.outdir}/${sample_id}/bins/${bin_fa.baseName}", mode: 'copy'
+    publishDir "${params.outdir}/${sample}/bins/${bin_fa.baseName}", mode: 'copy'
 
     input:
-    tuple val(sample_id), path(bam_file), path(bam_index), path(reference), path(bin_fa)
+    tuple val(sample), path(bam), path(bam_index), path(assembly), path(bin_fa)
 
     output:
-    tuple val(sample_id), path("${sample_id}.bam"), path("${sample_id}.bam.bai"), path(bin_fa)
+    tuple val(sample), path("${sample}.bam"), path("${sample}.bam.bai"), path(bin_fa)
 
     script:
     """
@@ -81,12 +81,12 @@ process split_bam_by_bin {
     awk '/^>/{gsub(/^>/,""); split(\$1,a," "); print a[1]}' ${bin_fa} > ${bin_fa.baseName}.contigs.txt
 
     # filter bam by contigs
-    samtools view -b ${bam_file} \$(cat ${bin_fa.baseName}.contigs.txt) -o ${sample_id}.bam
-    samtools index ${sample_id}.bam
+    samtools view -b ${bam} \$(cat ${bin_fa.baseName}.contigs.txt) -o ${sample}.bam
+    samtools index ${sample}.bam
     """
     stub:
     """
-    touch ${sample_id}.bam
-    touch ${sample_id}.bam.bai
+    touch ${sample}.bam
+    touch ${sample}.bam.bai
     """
 }
