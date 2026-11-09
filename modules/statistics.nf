@@ -1,4 +1,4 @@
-process compute_statistics {
+process COMPUTE_STATISTICS {
     label 'biopython'
     // run an inhouse script that computes which bases are methylated: modified bases / total bases 
     

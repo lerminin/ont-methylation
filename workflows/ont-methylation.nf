@@ -4,9 +4,9 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { bam2fastq; zipfastq; minimap2; split_bam_by_bin } from '../modules/map_index_bam.nf'
-include { modkit_pileup; modkit_pileup_bedgraphs; modkit_find_motifs; custom_bedgraphs; publish_results_meta; publish_results_motifs_meta; publish_results; publish_results_motifs} from '../modules/modkit.nf'
-include { compute_statistics } from '../modules/statistics.nf'
+include { BAM2FASTQ; ZIPFASTQ; MINIMAP2; SPLIT_BAM_BY_BIN } from '../modules/map_index_bam.nf'
+include { MODKIT_PILEUP; MODKIT_PILEUP_BEDGRAPHS; MODKIT_FIND_MOTIFS; CUSTOM_BEDGRAPHS; PUBLISH_RESULTS_META; PUBLISH_RESULTS_MOTIFS_META; PUBLISH_RESULTS; PUBLISH_RESULTS_MOTIFS} from '../modules/modkit.nf'
+include { COMPUTE_STATISTICS } from '../modules/statistics.nf'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -29,13 +29,13 @@ workflow ONT_METHYLATION {
     main:
     ch_samplesheet.view { sample -> "Input: ${sample}" }
 
-    fastq_files = bam2fastq(ch_samplesheet)
+    fastq_files = BAM2FASTQ(ch_samplesheet)
     
-    zipfastq(fastq_files)
+    ZIPFASTQ(fastq_files)
 
-    mapped_bams = minimap2(bam2fastq.out)
+    mapped_bams = MINIMAP2(BAM2FASTQ.out)
 
-    bed_files = modkit_pileup(mapped_bams)
+    bed_files = MODKIT_PILEUP(mapped_bams)
 }
 
 // if (params.fasta && params.list) { fasta_input_ch = channel

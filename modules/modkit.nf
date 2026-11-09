@@ -1,4 +1,4 @@
-process modkit_pileup {
+process MODKIT_PILEUP {
     label 'modkit'
     // execute the modkit pileup command
     
@@ -19,7 +19,7 @@ process modkit_pileup {
     """
 }
 
-process modkit_pileup_bedgraphs {
+process MODKIT_PILEUP_BEDGRAPHS {
     label 'modkit'
     // execute the modkit pileup command to obtain the bedgraphs
     
@@ -39,7 +39,7 @@ process modkit_pileup_bedgraphs {
     """
 }
 
-process custom_bedgraphs {
+process CUSTOM_BEDGRAPHS {
     label 'biopython'
     // run an inhouse script that computes which bases are methylated: modified bases / total bases.
     // additionally, it saves the positions with a high methylation levels (>0.5) in tsv tables, one for each modification (6mA, 5mC and 4mC).
@@ -64,7 +64,7 @@ process custom_bedgraphs {
     """
 }
 
-process modkit_find_motifs {
+process MODKIT_FIND_MOTIFS {
     label 'modkit_low'
     // find motifs from the output of modkit pileup
     //errorStrategy 'ignore'
@@ -86,7 +86,7 @@ process modkit_find_motifs {
 }
 
 
-process publish_results_meta {
+process PUBLISH_RESULTS_META {
     label 'publish'
     publishDir path: {"${params.outdir}/${meta.id}/bins/${assembly_name}"}, mode: 'copy'
 
@@ -102,7 +102,7 @@ process publish_results_meta {
     """
 }
 
-process publish_results_motifs_meta {
+process PUBLISH_RESULTS_MOTIFS_META {
     label 'publish'
     publishDir path: {"${params.outdir}/${meta.id}/bins/${assembly_name}"}, mode: 'copy'
 
@@ -118,7 +118,7 @@ process publish_results_motifs_meta {
     """
 }
 
-process publish_results {
+process PUBLISH_RESULTS {
     label 'publish'
     publishDir path: {"${params.outdir}/${meta.id}"}, mode: 'copy'
 
@@ -134,7 +134,7 @@ process publish_results {
     """
 }
 
-process publish_results_motifs {
+process PUBLISH_RESULTS_MOTIFS {
     label 'publish'
     publishDir path: {"${params.outdir}/${meta.id}"}, mode: 'copy'
 

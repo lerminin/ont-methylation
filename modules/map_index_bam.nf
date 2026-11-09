@@ -1,4 +1,4 @@
-process bam2fastq {
+process BAM2FASTQ {
     // converts the BAM file from Dorado to FASTQ format 
     label 'minimap2'
 
@@ -18,7 +18,7 @@ process bam2fastq {
     """
 }
 
-process zipfastq {
+process ZIPFASTQ {
     // zip fastq file
     label 'minimap2'
     publishDir path: { "${params.outdir}/${meta.id}" }, mode:'copy'
@@ -39,7 +39,7 @@ process zipfastq {
     """
 }
 
-process minimap2 {
+process MINIMAP2 {
     label 'minimap2'
     // align with minimap2 
     publishDir path: { "${params.outdir}/${meta.id}" }, mode:'copy'
@@ -65,7 +65,7 @@ process minimap2 {
 }
 
 
-process split_bam_by_bin {
+process SPLIT_BAM_BY_BIN {
     label 'minimap2'
     publishDir path: {"${params.outdir}/${meta.id}/bins/${bin_fa.baseName}"}, mode: 'copy'
 
