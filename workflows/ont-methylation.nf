@@ -29,7 +29,7 @@ workflow ONT_METHYLATION {
     main:
     fastq_ch = BAM2FASTQ(ch_samplesheet)
     
-    ZIPFASTQ(fastq_ch)
+    // ZIPFASTQ(fastq_ch)
 
     mapped_bams_ch = MINIMAP2(BAM2FASTQ.out)
 
@@ -43,14 +43,14 @@ workflow ONT_METHYLATION {
 
     statistics_ch = COMPUTE_STATISTICS(pileup_ch)
 
-    // publish_input = pileup_ch.join(pileup_bedgraphs_ch)
-    //                         .join(custom_bedgraphs_ch)
-    //                         .join(statistics_ch) 
+    publish_input = pileup_ch.join(pileup_bedgraphs_ch)
+                            .join(custom_bedgraphs_ch)
+                            .join(statistics_ch) 
 
-    // publish_motifs_input = pileup_ch.join(motifs_ch)
+    publish_motifs_input = pileup_ch.join(motifs_ch)
 
-    // PUBLISH_RESULTS(publish_input)
-    // PUBLISH_RESULTS_MOTIFS(publish_motifs_input)
+    PUBLISH_RESULTS(publish_input)
+    PUBLISH_RESULTS_MOTIFS(publish_motifs_input)
 }
 
 // if (params.fasta && params.list) { fasta_input_ch = channel

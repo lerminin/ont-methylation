@@ -127,8 +127,7 @@ process PUBLISH_RESULTS {
     publishDir path: {"${params.outdir}/${meta.id}"}, mode: 'copy'
 
     input:
-    tuple val(assembly_name), val(meta), path(assembly), 
-          path(bed_file), path(pileup_bedgraphs), path(custom_bedgraphs), path(modifications_tables), path(statistics)
+    tuple val(meta), path(bed_file), path(assembly), path(pileup_bedgraphs), path(assembly2), path(custom_bedgraphs), path(modifications_tables), path(statistics)
 
     output:
     tuple path(bed_file), path(pileup_bedgraphs), path(custom_bedgraphs), path(modifications_tables), path(statistics)
@@ -143,8 +142,7 @@ process PUBLISH_RESULTS_MOTIFS {
     publishDir path: {"${params.outdir}/${meta.id}"}, mode: 'copy'
 
     input:
-    tuple val(assembly_name), val(meta), path(assembly), 
-          path(bed_file), path(motifs)
+    tuple val(meta), path(bed_file), path(assembly), path(motifs)
 
     output:
     path(motifs)
