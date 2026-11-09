@@ -13,8 +13,7 @@
 */
 
 include { ONT_METHYLATION  } from './workflows/ont-methylation'
-include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_ont-methylation_pipeline'
-include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_ont-methylation_pipeline'
+include { PIPELINE_INITIALISATION; PIPELINE_COMPLETION } from './subworkflows/local/utils_methylation_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
