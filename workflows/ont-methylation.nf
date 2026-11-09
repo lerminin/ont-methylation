@@ -34,13 +34,23 @@ workflow ONT_METHYLATION {
     mapped_bams_ch = MINIMAP2(BAM2FASTQ.out)
 
     pileup_ch = MODKIT_PILEUP(mapped_bams_ch)
-    //MODKIT_PILEUP_BEDGRAPHS(mapped_bams_ch)
     
-    CUSTOM_BEDGRAPHS(pileup_ch)
+    pileup_bedgraphs_ch = MODKIT_PILEUP_BEDGRAPHS(mapped_bams_ch)
+    
+    custom_bedgraphs_ch = CUSTOM_BEDGRAPHS(pileup_ch)
 
-    MODKIT_FIND_MOTIFS(pileup_ch)
+    motifs_ch = MODKIT_FIND_MOTIFS(pileup_ch)
 
-    COMPUTE_STATISTICS(pileup_ch)
+    statistics_ch = COMPUTE_STATISTICS(pileup_ch)
+
+    // publish_input = pileup_ch.join(pileup_bedgraphs_ch)
+    //                         .join(custom_bedgraphs_ch)
+    //                         .join(statistics_ch) 
+
+    // publish_motifs_input = pileup_ch.join(motifs_ch)
+
+    // PUBLISH_RESULTS(publish_input)
+    // PUBLISH_RESULTS_MOTIFS(publish_motifs_input)
 }
 
 // if (params.fasta && params.list) { fasta_input_ch = channel
