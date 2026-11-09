@@ -3,10 +3,10 @@ process bam2fastq {
     label 'minimap2'
 
     input:
-    tuple val(meta), path(bam)
+    tuple val(meta), path(bam), path(assembly)
 
     output:
-    tuple val(meta), path("${meta.id}.fastq")
+    tuple val(meta), path("${meta.id}.fastq"), path(assembly)
 
     script:
     """
@@ -24,10 +24,10 @@ process zipfastq {
     publishDir path: { "${params.outdir}/${meta.id}" }, mode:'copy'
         
     input:
-    tuple val(meta), path(fastq_file)
+    tuple val(meta), path(fastq_file), path(assembly)
 
     output:
-    tuple val(meta), path("${meta.id}.fastq.gz")
+    tuple val(meta), path("${meta.id}.fastq.gz"), path(assembly)
 
     script:
     """

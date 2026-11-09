@@ -24,10 +24,18 @@ include { compute_statistics } from '../modules/statistics.nf'
 
 workflow ONT_METHYLATION {
     take:
-    samplesheet
+    ch_samplesheet
 
     main:
-    samplesheet.view { sample -> "Input: ${sample}" }
+    ch_samplesheet.view { sample -> "Input: ${sample}" }
+
+    fastq_files = bam2fastq(ch_samplesheet)
+    
+    zipfastq(fastq_files)
+
+    mapped_bams = minimap2(bam2fastq.out)
+
+    bed_files = modkit_pileup(mapped_bams)
 }
 
 // if (params.fasta && params.list) { fasta_input_ch = channel
