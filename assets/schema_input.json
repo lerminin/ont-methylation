@@ -11,18 +11,21 @@
       "sample": {
         "type": "string",
         "minLength": 1,
+        "meta": "id",
         "pattern": "^[A-Za-z0-9_-]+$",
         "description": "Unique sample identifier"
       },
       "bam": {
         "type": "string",
         "minLength": 1,
+        "exists": true,
         "pattern": "(?i)\\.bam$",
         "description": "Modification-tagged BAM file"
       },
       "assembly": {
         "type": "string",
         "minLength": 1,
+        "exists": true,
         "pattern": "(?i)\\.(fa|fasta|fna)$",
         "description": "Reference genome FASTA"
       }

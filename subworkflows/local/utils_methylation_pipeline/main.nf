@@ -35,7 +35,8 @@ workflow PIPELINE_INITIALISATION {
 
     rows = samplesheetToList(input, "${projectDir}/assets/schema_input.json")
 
-    sample_ids = rows.collect { row -> row.sample }
+    // Check for duplicate sample IDs
+    sample_ids = rows.collect { row -> row[0].id }
 
     if (sample_ids.size() != sample_ids.toSet().size()) {
         error "Duplicate sample IDs found in sample sheet"
@@ -43,15 +44,11 @@ workflow PIPELINE_INITIALISATION {
 
     samples_ch = channel
         .fromList(rows)
-        .map { row ->
-            def meta = [
-                id: row.sample
-            ]
-
-            tuple(
-                meta,
-                file(row.bam, checkIfExists: true),
-                file(row.assembly, checkIfExists: true)
+        .map { meta, bam, assembly ->
+        tuple(
+            meta,
+            file(bam, checkIfExists: true),
+            file(assembly, checkIfExists: true)
             )
         }
 
