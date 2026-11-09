@@ -35,7 +35,7 @@ workflow ONT_METHYLATION {
     // ZIPFASTQ(fastq_ch)
 
     // map fastq to reference assembly
-    mapped_bams_ch = MINIMAP2(BAM2FASTQ.out)
+    mapped_bams_ch = MINIMAP2(fastq_ch)
 
     // tabulate base modification calls across positions
     pileup_ch = MODKIT_PILEUP(mapped_bams_ch)
@@ -55,6 +55,7 @@ workflow ONT_METHYLATION {
     emit:
     pileup = pileup_ch
     bedgraphs = pileup_bedgraphs_ch
+    custom_bedgraphs = custom_bedgraphs_ch
     statistics = statistics_ch
     motifs = motifs_ch
 

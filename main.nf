@@ -14,6 +14,7 @@
 
 include { ONT_METHYLATION  } from './workflows/ont-methylation'
 include { PIPELINE_INITIALISATION; PIPELINE_COMPLETION } from './subworkflows/local/utils_methylation_pipeline'
+include { validateParameters } from 'plugin/nf-schema'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -47,6 +48,9 @@ workflow LERMININ_ONT_METHYLATION {
 workflow {
 
     main:
+
+    validateParameters()
+    
     //
     // SUBWORKFLOW: Run initialisation tasks
     //

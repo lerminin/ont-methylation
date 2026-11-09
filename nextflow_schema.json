@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ONT methylation pipeline parameters",
+  "description": "Parameter validation for the ONT methylation Nextflow pipeline",
+  "type": "object",
+  "properties": {
+    "input": {
+      "type": "string",
+      "description": "CSV sample sheet containing sample, bam and assembly columns",
+      "pattern": "\\.csv$",
+      "format": "file-path",
+      "exists": true,
+      "errorMessage": "Input file name must end in '.csv' and cannot contain spaces"
+    },
+    "outdir": {
+      "type": "string",
+      "format": "directory-path",
+      "description": "Directory for pipeline results"
+    },
+    "filter_threshold_modkit": {
+      "type": "number",
+      "default": 0.75,
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Filter threshold for Modkit"
+    },
+    "automatic_threshold_modkit": {
+      "type": "boolean",
+      "default": "false",
+      "description": "Enable automatic estimation of the filter threshold by modkit. When true, true, modkit will determine an optimal threshold from the data and the value of --filter_threshold_modkit will be ignored."
+    },
+    "percent_cutoff_modification_table": {
+      "type": "number",
+      "default": 0.5,
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Minimum methylation percentage required for genome positions to be reported in the modification tables"
+    }
+  },
+  "required": ["input"],
+  "additionalProperties": true
+}
