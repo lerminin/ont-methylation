@@ -1,5 +1,6 @@
 process MODKIT_PILEUP {
     label 'modkit'
+    publishDir path: { "${params.outdir}/${meta.id}" }, mode:'copy'
     // execute the modkit pileup command
     
     input:
@@ -21,6 +22,7 @@ process MODKIT_PILEUP {
 
 process MODKIT_PILEUP_BEDGRAPHS {
     label 'modkit'
+    publishDir path: { "${params.outdir}/${meta.id}" }, mode:'copy'
     // execute the modkit pileup command to obtain the bedgraphs
     cpus 8
     memory '32 GB'
@@ -43,6 +45,7 @@ process MODKIT_PILEUP_BEDGRAPHS {
 
 process CUSTOM_BEDGRAPHS {
     label 'biopython'
+    publishDir path: { "${params.outdir}/${meta.id}" }, mode:'copy'
     // run an inhouse script that computes which bases are methylated: modified bases / total bases.
     // additionally, it saves the positions with a high methylation levels (>0.5) in tsv tables, one for each modification (6mA, 5mC and 4mC).
 
@@ -68,6 +71,7 @@ process CUSTOM_BEDGRAPHS {
 
 process MODKIT_FIND_MOTIFS {
     label 'modkit_low'
+    publishDir path: { "${params.outdir}/${meta.id}" }, mode:'copy'
     // find motifs from the output of modkit pileup
     //errorStrategy 'ignore'
     cpus 8

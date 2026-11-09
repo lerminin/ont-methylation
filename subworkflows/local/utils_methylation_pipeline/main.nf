@@ -68,7 +68,7 @@ workflow PIPELINE_COMPLETION {
     workflow.onComplete {
         //log.info "Pipeline completed: ${workflow.success}"
         //log.info "Duration: ${workflow.duration}"
-        log.info "ONT methylation workflow initialised successfully"
+        log.info "ONT methylation workflow completed successfully"
     }
 }
 

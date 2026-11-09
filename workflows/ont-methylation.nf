@@ -27,34 +27,37 @@ workflow ONT_METHYLATION {
     ch_samplesheet
 
     main:
+
+    // convert methylbam to fastq
     fastq_ch = BAM2FASTQ(ch_samplesheet)
     
+    // gzip reads
     // ZIPFASTQ(fastq_ch)
 
+    // map fastq to reference assembly
     mapped_bams_ch = MINIMAP2(BAM2FASTQ.out)
 
+    // tabulate base modification calls across positions
     pileup_ch = MODKIT_PILEUP(mapped_bams_ch)
     
+    // generate bedgraphs
     pileup_bedgraphs_ch = MODKIT_PILEUP_BEDGRAPHS(mapped_bams_ch)
     
+    // run script that computes which bases are methylated
     custom_bedgraphs_ch = CUSTOM_BEDGRAPHS(pileup_ch)
 
+    // find methylated motifs
     motifs_ch = MODKIT_FIND_MOTIFS(pileup_ch)
 
+    // count statistics and percent bases modified
     statistics_ch = COMPUTE_STATISTICS(pileup_ch)
 
-    publish_input = pileup_ch.join(
-            pileup_bedgraphs_ch.map { meta, bedgraphs, assembly ->
-                tuple(meta, bedgraphs)
-            }
-        )
-        .join(custom_bedgraphs_ch)
-        .join(statistics_ch)
+    emit:
+    pileup = pileup_ch
+    bedgraphs = pileup_bedgraphs_ch
+    statistics = statistics_ch
+    motifs = motifs_ch
 
-    publish_motifs_input = pileup_ch.join(motifs_ch)
-
-    PUBLISH_RESULTS(publish_input)
-    PUBLISH_RESULTS_MOTIFS(publish_motifs_input)
 }
 
   
