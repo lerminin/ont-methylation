@@ -1,5 +1,6 @@
 process MODKIT_PILEUP {
     label 'modkit'
+    label 'process_high'
     publishDir path: { "${params.outdir}/${meta.id}" }, mode:'copy'
     // execute the modkit pileup command
     
@@ -22,10 +23,9 @@ process MODKIT_PILEUP {
 
 process MODKIT_PILEUP_BEDGRAPHS {
     label 'modkit'
+    label 'process_high'
     publishDir path: { "${params.outdir}/${meta.id}" }, mode:'copy'
     // execute the modkit pileup command to obtain the bedgraphs
-    cpus 8
-    memory '32 GB'
     
     input:
     tuple val(meta), path(mapped_bam), path(mapped_bam_bai), path(assembly)
@@ -45,6 +45,7 @@ process MODKIT_PILEUP_BEDGRAPHS {
 
 process CUSTOM_BEDGRAPHS {
     label 'biopython'
+    label 'process_low'
     publishDir path: { "${params.outdir}/${meta.id}" }, mode:'copy'
     // run an inhouse script that computes which bases are methylated: modified bases / total bases.
     // additionally, it saves the positions with a high methylation levels (>0.5) in tsv tables, one for each modification (6mA, 5mC and 4mC).
@@ -71,11 +72,10 @@ process CUSTOM_BEDGRAPHS {
 
 process MODKIT_FIND_MOTIFS {
     label 'modkit_low'
+    label 'process_high'
     publishDir path: { "${params.outdir}/${meta.id}" }, mode:'copy'
     // find motifs from the output of modkit pileup
     //errorStrategy 'ignore'
-    cpus 8
-    memory '32 GB'
 
     input:
     tuple val(meta), path(bed_file), path(assembly)
@@ -117,36 +117,6 @@ process PUBLISH_RESULTS_MOTIFS_META {
     input:
     tuple val(assembly_name), val(meta), path(assembly), 
           path(bed_file), path(motifs)
-
-    output:
-    path(motifs)
-
-    script:
-    """
-    """
-}
-
-process PUBLISH_RESULTS {
-    label 'publish'
-    publishDir path: {"${params.outdir}/${meta.id}"}, mode: 'copy'
-
-    input:
-    tuple val(meta), path(bed_file), path(assembly), path(pileup_bedgraphs), path(custom_bedgraphs), path(modifications_tables), path(statistics)
-
-    output:
-    tuple path(bed_file), path(pileup_bedgraphs), path(custom_bedgraphs), path(modifications_tables), path(statistics)
-
-    script:
-    """
-    """
-}
-
-process PUBLISH_RESULTS_MOTIFS {
-    label 'publish'
-    publishDir path: {"${params.outdir}/${meta.id}"}, mode: 'copy'
-
-    input:
-    tuple val(meta), path(bed_file), path(assembly), path(motifs)
 
     output:
     path(motifs)

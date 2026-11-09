@@ -1,6 +1,7 @@
 process BAM2FASTQ {
     // converts the BAM file from Dorado to FASTQ format 
     label 'minimap2'
+    label 'process_medium'
 
     input:
     tuple val(meta), path(bam), path(assembly)
@@ -21,6 +22,7 @@ process BAM2FASTQ {
 process ZIPFASTQ {
     // zip fastq file
     label 'minimap2'
+    label 'process_low'
     publishDir path: { "${params.outdir}/${meta.id}" }, mode:'copy'
         
     input:
@@ -41,6 +43,7 @@ process ZIPFASTQ {
 
 process MINIMAP2 {
     label 'minimap2'
+    label 'process_medium'
     // align with minimap2 
     publishDir path: { "${params.outdir}/${meta.id}" }, mode:'copy'
 
@@ -67,6 +70,7 @@ process MINIMAP2 {
 
 process SPLIT_BAM_BY_BIN {
     label 'minimap2'
+    label 'process_low'
     publishDir path: {"${params.outdir}/${meta.id}/bins/${bin_fa.baseName}"}, mode: 'copy'
 
     input:
