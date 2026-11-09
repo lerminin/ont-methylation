@@ -127,7 +127,7 @@ process PUBLISH_RESULTS {
     publishDir path: {"${params.outdir}/${meta.id}"}, mode: 'copy'
 
     input:
-    tuple val(meta), path(bed_file), path(assembly), path(pileup_bedgraphs), path(assembly2), path(custom_bedgraphs), path(modifications_tables), path(statistics)
+    tuple val(meta), path(bed_file), path(assembly), path(pileup_bedgraphs), path(custom_bedgraphs), path(modifications_tables), path(statistics)
 
     output:
     tuple path(bed_file), path(pileup_bedgraphs), path(custom_bedgraphs), path(modifications_tables), path(statistics)
