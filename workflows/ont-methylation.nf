@@ -77,17 +77,22 @@ workflow META_WORKFLOW {
     mapped_bams_ch = MINIMAP2(fastq_ch)
 
     // Split bams by bin
-    bins_ch = mapped_bams_ch.map { meta, _bam, _index, _assembly, bins ->
-            tuple(meta.id, bins)
+    bins_ch = mapped_bams_ch.flatMap { meta, bam, index, assembly, bins ->
+
+        def bin_files = bins.toFile().listFiles()
+            ?.findAll { it.name ==~ /.*\.(fasta|fa)$/ }
+            ?.sort { it.name }
+
+        if (!bin_files) {
+            error "No bin FASTA files found for sample ${meta.id}: ${bins}"
         }
 
-    // Match mapped BAMs to the correct sample's bins
-    mapped_keyed_ch = mapped_bams_ch.map { meta, bam, index, assembly ->
-        tuple(meta.id, meta, bam, index, assembly)
+        bin_files.collect { bin ->
+            tuple(meta,  bam, index, assembly, file(bin))
+        }
     }
 
-    bam_bin_pairs = mapped_keyed_ch.join(bins_ch)
-    mapped_filtered_bams_ch = SPLIT_BAM_BY_BIN(bam_bin_pairs)
+    mapped_filtered_bams_ch = SPLIT_BAM_BY_BIN(bins_ch)
 
     // tabulate base modification calls across positions
     pileup_ch = MODKIT_PILEUP(mapped_filtered_bams_ch)

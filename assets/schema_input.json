@@ -29,7 +29,7 @@
         "pattern": "(?i)\\.(fa|fasta|fna)$",
         "description": "Reference genome FASTA"
       },
-      "bin_folder": {
+      "bins_folder": {
         "type": "string",
         "format": "file-path",
         "exists": true,

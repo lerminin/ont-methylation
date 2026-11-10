@@ -71,21 +71,21 @@ process MINIMAP2 {
 process SPLIT_BAM_BY_BIN {
     label 'minimap2'
     label 'process_low'
-    publishDir path: {"${params.outdir}/${meta.id}/bins/${bins.baseName}"}, mode: 'copy'
+    publishDir path: {"${params.outdir}/${meta.id}/bins/${bins_fasta.baseName}"}, mode: 'copy'
 
     input:
-    tuple val(meta), path(bam), path(bam_index), path(assembly), path(bins)
+    tuple val(meta), path(bam), path(bam_index), path(assembly), path(bins_fasta)
 
     output:
-    tuple val(meta), path("${meta.id}.bam"), path("${meta.id}.bam.bai"), path(bins)
+    tuple val(meta), path("${meta.id}.bam"), path("${meta.id}.bam.bai"), path(assembly), path(bins_fasta)
 
     script:
     """
     # extract contigs from bin fasta
-    awk '/^>/{gsub(/^>/,""); split(\$1,a," "); print a[1]}' ${bins} > ${bins.baseName}.contigs.txt
+    awk '/^>/{gsub(/^>/,""); split(\$1,a," "); print a[1]}' ${bins_fasta} > ${bins_fasta.baseName}.contigs.txt
 
     # filter bam by contigs
-    samtools view -b ${bam} \$(cat ${bins.baseName}.contigs.txt) -o ${meta.id}.bam
+    samtools view -b ${bam} \$(cat ${bins_fasta.baseName}.contigs.txt) -o ${meta.id}.bam
     samtools index ${meta.id}.bam
     """
     stub:

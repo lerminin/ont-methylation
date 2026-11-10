@@ -4,7 +4,7 @@ process COMPUTE_STATISTICS {
     // run an inhouse script that computes which bases are methylated: modified bases / total bases 
     
     input:
-    tuple val(meta), path(bed_file), path(assembly)
+    tuple val(meta), path(bed_file), path(assembly), path(bins)
 
     output:
     tuple val(meta), path("methylation_statistics")
