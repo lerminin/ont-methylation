@@ -22,7 +22,13 @@ process BAM2FASTQ {
     """
     stub:
     """
-    touch ${meta.id}.fastq    
+    touch ${meta.id}.fastq
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        samtools: "stub"
+        minimap": "stub"
+    END_VERSIONS    
     """
 }
 
@@ -78,26 +84,28 @@ process MINIMAP2 {
 process SPLIT_BAM_BY_BIN {
     label 'minimap2'
     label 'process_low'
-    publishDir path: {"${params.outdir}/${meta.id}/bins/${bins_fasta.baseName}"}, mode: 'copy'
+    publishDir path: {"${params.outdir}/${meta.id}/${meta.bin_id}"}, mode: 'copy'
 
     input:
     tuple val(meta), path(bam), path(bam_index), path(assembly), path(bins_fasta)
 
     output:
-    tuple val(meta), path("${meta.id}.bam"), path("${meta.id}.bam.bai"), path(assembly), path(bins_fasta)
+    tuple val(meta), path("${prefix}.bam"), path("${prefix}.bam.bai"), path(assembly), path(bins_fasta)
 
     script:
+    prefix = "${meta.id}.${meta.bin_id}"
     """
     # extract contigs from bin fasta
     awk '/^>/{gsub(/^>/,""); split(\$1,a," "); print a[1]}' ${bins_fasta} > ${bins_fasta.baseName}.contigs.txt
 
     # filter bam by contigs
-    samtools view -b ${bam} \$(cat ${bins_fasta.baseName}.contigs.txt) -o ${meta.id}.bam
-    samtools index ${meta.id}.bam
+    samtools view -b ${bam} -L ${prefix}.contigs.txt -o ${meta.id}.bam
+    samtools index ${prefix}.bam
     """
     stub:
+    prefix = "${meta.id}.${meta.bin_id}"
     """
-    touch ${meta.id}.bam
-    touch ${meta.id}.bam.bai
+    touch ${prefix}.bam
+    touch ${prefix}.bam.bai
     """
 }

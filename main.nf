@@ -15,6 +15,7 @@
 include { ISOLATE_WORKFLOW; META_WORKFLOW  } from './workflows/ont-methylation'
 include { PIPELINE_INITIALISATION; PIPELINE_COMPLETION } from './subworkflows/local/utils_methylation_pipeline'
 include { paramsHelp; validateParameters } from 'plugin/nf-schema'
+include { softwareVersionsToYAML } from 'plugin/nf-core-utils'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -37,9 +38,28 @@ workflow ONT_METHYLATION {
     //
     if (params.meta) {
         META_WORKFLOW(samplesheet)
+        
+        softwareVersionsToYAML(META_WORKFLOW.out.versions)
+        .collectFile(
+            storeDir: "${params.outdir}/pipeline_info",
+            name:  'software_'  + 'versions.yml',
+            sort: true,
+            newLine: true
+        )
+
     } else {
         ISOLATE_WORKFLOW(samplesheet)
+
+        softwareVersionsToYAML(ISOLATE_WORKFLOW.out.versions)
+        .collectFile(
+            storeDir: "${params.outdir}/pipeline_info",
+            name:  'software_'  + 'versions.yml',
+            sort: true,
+            newLine: true
+        )
+
     }
+    
 }
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
