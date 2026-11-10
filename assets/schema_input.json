@@ -28,6 +28,12 @@
         "exists": true,
         "pattern": "(?i)\\.(fa|fasta|fna)$",
         "description": "Reference genome FASTA"
+      },
+      "bin_folder": {
+        "type": "string",
+        "format": "file-path",
+        "exists": true,
+        "description": "Bin folder path containing the binned contigs in separate fasta files"
       }
     },
     "required": [

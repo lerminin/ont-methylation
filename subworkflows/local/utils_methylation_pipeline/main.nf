@@ -33,23 +33,25 @@ workflow PIPELINE_INITIALISATION {
         error "Please provide a sample sheet using --input"
     }
 
-    rows = samplesheetToList(input, "${projectDir}/assets/schema_input.json")
-
-    // Check for duplicate sample IDs
-    sample_ids = rows.collect { row -> row[0].id }
-
-    if (sample_ids.size() != sample_ids.toSet().size()) {
-        error "Duplicate sample IDs found in sample sheet"
-    }
+    def required_columns = params.meta
+        ? ['sample', 'bam', 'assembly', 'bins_folder']
+        : ['sample', 'bam', 'assembly']
 
     samples_ch = channel
-        .fromList(rows)
-        .map { meta, bam, assembly ->
-        tuple(
-            meta,
-            file(bam, checkIfExists: true),
-            file(assembly, checkIfExists: true)
-            )
+        .fromPath(params.input, checkIfExists: true)
+        .splitCsv(header: true)
+        .map { row ->
+
+            def meta = [id: row.sample]
+
+            def fasta = file(row.fasta, checkIfExists: true)
+            def bam   = file(row.bam, checkIfExists: true)
+
+            def bins = params.meta
+                ? file(row.bins_folder, checkIfExists: true)
+                : null
+
+            tuple(meta, fasta, bam, bins)
         }
 
     emit:

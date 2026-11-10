@@ -5,10 +5,10 @@ process MODKIT_PILEUP {
     // execute the modkit pileup command
     
     input:
-    tuple val(meta), path(mapped_bam), path(mapped_bam_bai), path(assembly)
+    tuple val(meta), path(mapped_bam), path(mapped_bam_bai), path(assembly), path(bins)
 
     output:
-    tuple val(meta), path("modkit_pileup_output.bed"), path(assembly)
+    tuple val(meta), path("modkit_pileup_output.bed"), path(assembly), path(bins)
 
     script:
     filter_threshold = params.automatic_threshold_modkit ? '' : "--filter-threshold ${params.filter_threshold_modkit}"
@@ -28,8 +28,7 @@ process MODKIT_PILEUP_BEDGRAPHS {
     // execute the modkit pileup command to obtain the bedgraphs
     
     input:
-    tuple val(meta), path(mapped_bam), path(mapped_bam_bai), path(assembly)
-
+    tuple val(meta), path(mapped_bam), path(mapped_bam_bai), path(assembly), path(bins)
     output:
     tuple val(meta), path("bedgraphs"), path(assembly)
 
@@ -51,7 +50,7 @@ process CUSTOM_BEDGRAPHS {
     // additionally, it saves the positions with a high methylation levels (>0.5) in tsv tables, one for each modification (6mA, 5mC and 4mC).
 
     input:
-    tuple val(meta), path(bed_file), path(assembly)
+    tuple val(meta), path(bed_file), path(assembly), path(bins)
 
     output:
     tuple val(meta), path("bedgraphs_customized"), path("modifications_tables")
@@ -78,7 +77,7 @@ process MODKIT_FIND_MOTIFS {
     //errorStrategy 'ignore'
 
     input:
-    tuple val(meta), path(bed_file), path(assembly)
+    tuple val(meta), path(bed_file), path(assembly), path(bins)
 
     output:
     tuple val(meta), path("modkit_motifs.tsv")
@@ -93,35 +92,3 @@ process MODKIT_FIND_MOTIFS {
     """ 
 }
 
-
-process PUBLISH_RESULTS_META {
-    label 'publish'
-    publishDir path: {"${params.outdir}/${meta.id}/bins/${assembly_name}"}, mode: 'copy'
-
-    input:
-    tuple val(assembly_name), val(meta), path(assembly), 
-          path(bed_file), path(pileup_bedgraphs), path(custom_bedgraphs), path(modifications_tables), path(statistics)
-
-    output:
-    tuple path(bed_file), path(pileup_bedgraphs),  path(custom_bedgraphs), path(modifications_tables), path(statistics)
-
-    script:
-    """
-    """
-}
-
-process PUBLISH_RESULTS_MOTIFS_META {
-    label 'publish'
-    publishDir path: {"${params.outdir}/${meta.id}/bins/${assembly_name}"}, mode: 'copy'
-
-    input:
-    tuple val(assembly_name), val(meta), path(assembly), 
-          path(bed_file), path(motifs)
-
-    output:
-    path(motifs)
-
-    script:
-    """
-    """
-}

@@ -1,2 +1,2 @@
-sample,bam,assembly
-AB24,../test_data/AB24.bam,../test_data/AB24.fasta
+sample,bam,assembly,bin_folder
+metagenome,tests/metagenome.bam,tests/metagenome.fasta,tests/binfolder/

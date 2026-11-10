@@ -12,7 +12,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { ONT_METHYLATION  } from './workflows/ont-methylation'
+include { ISOLATE_WORKFLOW; META_WORKFLOW  } from './workflows/ont-methylation'
 include { PIPELINE_INITIALISATION; PIPELINE_COMPLETION } from './subworkflows/local/utils_methylation_pipeline'
 include { paramsHelp; validateParameters } from 'plugin/nf-schema'
 
@@ -25,7 +25,7 @@ include { paramsHelp; validateParameters } from 'plugin/nf-schema'
 //
 // WORKFLOW: Run main analysis pipeline depending on type of input
 //
-workflow LERMININ_ONT_METHYLATION {
+workflow ONT_METHYLATION {
 
     take:
     samplesheet // channel: samplesheet read in from --input
@@ -35,9 +35,11 @@ workflow LERMININ_ONT_METHYLATION {
     //
     // WORKFLOW: Run pipeline
     //
-    ONT_METHYLATION (
-        samplesheet
-    )
+    if (params.meta) {
+        META_WORKFLOW(samplesheet)
+    } else {
+        ISOLATE_WORKFLOW(samplesheet)
+    }
 }
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -72,7 +74,7 @@ workflow {
         //
         // WORKFLOW: Run main workflow
         //
-        LERMININ_ONT_METHYLATION (
+        ONT_METHYLATION (
             PIPELINE_INITIALISATION.out.samplesheet
         )
         //

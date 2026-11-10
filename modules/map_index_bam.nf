@@ -4,10 +4,10 @@ process BAM2FASTQ {
     label 'process_medium'
 
     input:
-    tuple val(meta), path(bam), path(assembly)
+    tuple val(meta), path(bam), path(assembly), path(bins, arity: '0..1')
 
     output:
-    tuple val(meta), path("${meta.id}.fastq"), path(assembly)
+    tuple val(meta), path("${meta.id}.fastq"), path(assembly), path(bins)
 
     script:
     """
@@ -26,10 +26,10 @@ process ZIPFASTQ {
     publishDir path: { "${params.outdir}/${meta.id}" }, mode:'copy'
         
     input:
-    tuple val(meta), path(fastq_file), path(assembly)
+    tuple val(meta), path(fastq_file), path(assembly), path(bins, arity: '0..1')
 
     output:
-    tuple val(meta), path("${meta.id}.fastq.gz"), path(assembly)
+    tuple val(meta), path("${meta.id}.fastq.gz"), path(assembly), path(bins)
 
     script:
     """
@@ -48,10 +48,10 @@ process MINIMAP2 {
     publishDir path: { "${params.outdir}/${meta.id}" }, mode:'copy'
 
     input:
-    tuple val(meta), path(fastq_file), path(assembly)
+    tuple val(meta), path(fastq_file), path(assembly), path(bins, arity: '0..1')
 
     output:
-    tuple val(meta), path("${meta.id}_methylation_mapped.bam"), path("${meta.id}_methylation_mapped.bam.bai"), path(assembly)
+    tuple val(meta), path("${meta.id}_methylation_mapped.bam"), path("${meta.id}_methylation_mapped.bam.bai"), path(assembly), path(bins)
 
     script:
     """
@@ -71,21 +71,21 @@ process MINIMAP2 {
 process SPLIT_BAM_BY_BIN {
     label 'minimap2'
     label 'process_low'
-    publishDir path: {"${params.outdir}/${meta.id}/bins/${bin_fa.baseName}"}, mode: 'copy'
+    publishDir path: {"${params.outdir}/${meta.id}/bins/${bins.baseName}"}, mode: 'copy'
 
     input:
-    tuple val(meta), path(bam), path(bam_index), path(assembly), path(bin_fa)
+    tuple val(meta), path(bam), path(bam_index), path(assembly), path(bins, arity: '0..1')
 
     output:
-    tuple val(meta), path("${meta.id}.bam"), path("${meta.id}.bam.bai"), path(bin_fa)
+    tuple val(meta), path("${meta.id}.bam"), path("${meta.id}.bam.bai"), path(bins, arity: '0..1')
 
     script:
     """
     # extract contigs from bin fasta
-    awk '/^>/{gsub(/^>/,""); split(\$1,a," "); print a[1]}' ${bin_fa} > ${bin_fa.baseName}.contigs.txt
+    awk '/^>/{gsub(/^>/,""); split(\$1,a," "); print a[1]}' ${bins} > ${bins.baseName}.contigs.txt
 
     # filter bam by contigs
-    samtools view -b ${bam} \$(cat ${bin_fa.baseName}.contigs.txt) -o ${meta.id}.bam
+    samtools view -b ${bam} \$(cat ${bins.baseName}.contigs.txt) -o ${meta.id}.bam
     samtools index ${meta.id}.bam
     """
     stub:
