@@ -5,21 +5,21 @@ process MODKIT_PILEUP {
         meta.bin_id
             ? "${params.outdir}/${meta.id}/${meta.bin_id}"
             : "${params.outdir}/${meta.id}"
-    }, mode: 'copy'
+    }, mode: 'copy', pattern: "*.bed"
     // execute the modkit pileup command
     
     input:
-    tuple val(meta), path(mapped_bam), path(mapped_bam_bai), path(assembly), path(bins)
+    tuple val(meta), path(mapped_bam), path(mapped_bam_bai), path(assembly)
 
     output:
-    tuple val(meta), path("${prefix}_modkit_pileup_output.bed"), path(assembly), path(bins), emit: files
+    tuple val(meta), path("${prefix}modkit_pileup_output.bed"), path(assembly), emit: files
     path "versions.yml", emit: versions
 
     script:
     filter_threshold = params.automatic_threshold_modkit ? '' : "--filter-threshold ${params.filter_threshold_modkit}"
-    prefix = meta.bin_id ? "${meta.id}.${meta.bin_id}" : meta.id
+    prefix = meta.bin_id ? "${meta.id}.${meta.bin_id}_" : ""
     """
-    modkit pileup -t ${task.cpus} ${mapped_bam} ${prefix}_modkit_pileup_output.bed ${filter_threshold}
+    modkit pileup -t ${task.cpus} ${mapped_bam} ${prefix}modkit_pileup_output.bed ${filter_threshold}
     
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -27,9 +27,9 @@ process MODKIT_PILEUP {
     END_VERSIONS
     """
     stub:
-    prefix = meta.bin_id ? "${meta.id}.${meta.bin_id}" : meta.id
+    prefix = meta.bin_id ? "${meta.id}.${meta.bin_id}_" : ""
     """
-    touch ${prefix}_modkit_pileup_output.bed
+    touch ${prefix}modkit_pileup_output.bed
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -49,19 +49,19 @@ process MODKIT_PILEUP_BEDGRAPHS {
     // execute the modkit pileup command to obtain the bedgraphs
     
     input:
-    tuple val(meta), path(mapped_bam), path(mapped_bam_bai), path(assembly), path(bins)
+    tuple val(meta), path(mapped_bam), path(mapped_bam_bai), path(assembly)
     output:
-    tuple val(meta), path("bedgraphs_${prefix}"), path(assembly)
+    tuple val(meta), path("${prefix}bedgraphs"), path(assembly)
 
     script:
-    prefix = meta.bin_id ? "${meta.id}.${meta.bin_id}" : meta.id
+    prefix = meta.bin_id ? "${meta.id}.${meta.bin_id}_" : ""
     """
-    modkit pileup -t ${task.cpus} ${mapped_bam} --bedgraph bedgraphs_${prefix} --filter-threshold ${params.filter_threshold_modkit} 
+    modkit pileup -t ${task.cpus} ${mapped_bam} --bedgraph ${prefix}bedgraphs --filter-threshold ${params.filter_threshold_modkit} 
     """
     stub:
-    prefix = meta.bin_id ? "${meta.id}.${meta.bin_id}" : meta.id
+    prefix = meta.bin_id ? "${meta.id}.${meta.bin_id}_" : ""
     """
-    mkdir -p bedgraphs_${prefix}
+    mkdir -p ${prefix}bedgraphs
     """
 }
 
@@ -77,24 +77,24 @@ process CUSTOM_BEDGRAPHS {
     // additionally, it saves the positions with a high methylation levels (>0.5) in tsv tables, one for each modification (6mA, 5mC and 4mC).
 
     input:
-    tuple val(meta), path(bed_file), path(assembly), path(bins)
+    tuple val(meta), path(bed_file), path(assembly)
 
     output:
-    tuple val(meta), path("bedgraphs_customized_${prefix}"), path("modifications_tables_${prefix}")
+    tuple val(meta), path("${prefix}bedgraphs_customized"), path("${prefix}modifications_tables")
 
     script:
-    prefix = meta.bin_id ? "${meta.id}.${meta.bin_id}" : meta.id
+    prefix = meta.bin_id ? "${meta.id}.${meta.bin_id}_" : ""
     """
-    mkdir -p bedgraphs_customized_${prefix}
-    mkdir -p modifications_tables_${prefix}
+    mkdir -p ${prefix}bedgraphs_customized
+    mkdir -p ${prefix}modifications_tables
 
     custom_bedgraphs.py ${bed_file} ${assembly} . --percent_cutoff ${params.percent_cutoff_modification_table}
     """
     stub:
-    prefix = meta.bin_id ? "${meta.id}.${meta.bin_id}" : meta.id
+    prefix = meta.bin_id ? "${meta.id}.${meta.bin_id}_" : ""
     """
-    mkdir -p bedgraphs_customized_${prefix}
-    mkdir -p modifications_tables_${prefix}
+    mkdir -p ${prefix}bedgraphs_customized
+    mkdir -p ${prefix}modifications_tables
     """
 }
 
@@ -110,20 +110,20 @@ process MODKIT_FIND_MOTIFS {
     //errorStrategy 'ignore'
 
     input:
-    tuple val(meta), path(bed_file), path(assembly), path(bins)
+    tuple val(meta), path(bed_file), path(assembly)
 
     output:
-    tuple val(meta), path("${prefix}_modkit_motifs.tsv")
+    tuple val(meta), path("*modkit_motifs.tsv")
 
     script:
-    prefix = meta.bin_id ? "${meta.id}.${meta.bin_id}" : meta.id
+    prefix = meta.bin_id ? "${meta.id}.${meta.bin_id}_" : ""
     """
-    modkit find-motifs -t ${task.cpus} --in-bedmethyl ${bed_file} --ref ${assembly} -o ${prefix}_modkit_motifs.tsv
+    modkit find-motifs -t ${task.cpus} --in-bedmethyl ${bed_file} --ref ${assembly} -o ${prefix}modkit_motifs.tsv
     """
     stub:
-    prefix = meta.bin_id ? "${meta.id}.${meta.bin_id}" : meta.id
+    prefix = meta.bin_id ? "${meta.id}.${meta.bin_id}_" : ""
     """
-    touch ${prefix}_modkit_motifs.tsv
+    touch ${prefix}modkit_motifs.tsv
     """ 
 }
 

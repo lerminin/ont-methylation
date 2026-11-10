@@ -8,19 +8,19 @@ process COMPUTE_STATISTICS {
     // run an inhouse script that computes which bases are methylated: modified bases / total bases 
     
     input:
-    tuple val(meta), path(bed_file), path(assembly), path(bins)
+    tuple val(meta), path(bed_file), path(assembly)
 
     output:
-    tuple val(meta), path("${prefix}_methylation_statistics")
+    tuple val(meta), path("${prefix}methylation_statistics")
 
     script:
-    prefix = meta.bin_id ? "${meta.id}.${meta.bin_id}" : meta.id
+    prefix = meta.bin_id ? "${meta.id}.${meta.bin_id}_" : ""
     """
-    compute_statistics.py ${bed_file} ${assembly} ${prefix}_methylation_statistics
+    compute_statistics.py ${bed_file} ${assembly} ${prefix}methylation_statistics
     """
     stub:
-    prefix = meta.bin_id ? "${meta.id}.${meta.bin_id}" : meta.id
+    prefix = meta.bin_id ? "${meta.id}.${meta.bin_id}_" : ""
     """
-    mkdir -p ${prefix}_methylation_statistics    
+    mkdir -p ${prefix}methylation_statistics    
     """
 }

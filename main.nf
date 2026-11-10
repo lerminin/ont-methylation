@@ -38,23 +38,21 @@ workflow ONT_METHYLATION {
     //
     if (params.meta) {
         META_WORKFLOW(samplesheet)
-        
-        softwareVersionsToYAML(META_WORKFLOW.out.versions)
-        .collectFile(
+
+        ch_version_yaml = softwareVersionsToYAML(META_WORKFLOW.out.versions)
+        ch_version_yaml.collectFile(
             storeDir: "${params.outdir}/pipeline_info",
             name:  'software_'  + 'versions.yml',
-            sort: true,
             newLine: true
         )
 
     } else {
         ISOLATE_WORKFLOW(samplesheet)
 
-        softwareVersionsToYAML(ISOLATE_WORKFLOW.out.versions)
-        .collectFile(
+        ch_version_yaml = softwareVersionsToYAML(ISOLATE_WORKFLOW.out.versions)
+        ch_version_yaml.collectFile(
             storeDir: "${params.outdir}/pipeline_info",
             name:  'software_'  + 'versions.yml',
-            sort: true,
             newLine: true
         )
 

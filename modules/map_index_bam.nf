@@ -4,10 +4,10 @@ process BAM2FASTQ {
     label 'process_medium'
 
     input:
-    tuple val(meta), path(bam), path(assembly), path(bins)
+    tuple val(meta), path(bam), path(assembly)
 
     output:
-    tuple val(meta), path("${meta.id}.fastq"), path(assembly), path(bins), emit: files
+    tuple val(meta), path("${meta.id}.fastq"), path(assembly), emit: files
     path "versions.yml", emit: versions
 
     script:
@@ -27,7 +27,7 @@ process BAM2FASTQ {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         samtools: "stub"
-        minimap": "stub"
+        minimap2: "stub"
     END_VERSIONS    
     """
 }
@@ -39,10 +39,10 @@ process ZIPFASTQ {
     publishDir path: { "${params.outdir}/${meta.id}" }, mode:'copy'
         
     input:
-    tuple val(meta), path(fastq_file), path(assembly), path(bins)
+    tuple val(meta), path(fastq_file), path(assembly)
 
     output:
-    tuple val(meta), path("${meta.id}.fastq.gz"), path(assembly), path(bins)
+    tuple val(meta), path("${meta.id}.fastq.gz"), path(assembly)
 
     script:
     """
@@ -61,22 +61,23 @@ process MINIMAP2 {
     publishDir path: { "${params.outdir}/${meta.id}" }, mode:'copy'
 
     input:
-    tuple val(meta), path(fastq_file), path(assembly), path(bins)
+    tuple val(meta), path(fastq_file), path(assembly)
 
     output:
-    tuple val(meta), path("${meta.id}_methylation_mapped.bam"), path("${meta.id}_methylation_mapped.bam.bai"), path(assembly), path(bins)
+    tuple val(meta), path("methylation_mapped.bam"), path("methylation_mapped.bam.bai"), path(assembly)
 
     script:
+
     """
     minimap2 -t ${task.cpus} --secondary=no -ax map-ont -y ${assembly} ${fastq_file} | \
     samtools view -b | \
-    samtools sort -@ ${task.cpus} -o ${meta.id}_methylation_mapped.bam
-    samtools index ${meta.id}_methylation_mapped.bam
+    samtools sort -@ ${task.cpus} -o methylation_mapped.bam
+    samtools index methylation_mapped.bam
     """
     stub:
     """
-    touch ${meta.id}_methylation_mapped.bam
-    touch ${meta.id}_methylation_mapped.bam.bai
+    touch methylation_mapped.bam
+    touch methylation_mapped.bam.bai
     """
 }
 
@@ -96,10 +97,10 @@ process SPLIT_BAM_BY_BIN {
     prefix = "${meta.id}.${meta.bin_id}"
     """
     # extract contigs from bin fasta
-    awk '/^>/{gsub(/^>/,""); split(\$1,a," "); print a[1]}' ${bins_fasta} > ${bins_fasta.baseName}.contigs.txt
+    awk '/^>/{gsub(/^>/,""); split(\$1,a," "); print a[1]}' ${bins_fasta} > ${prefix}.contigs.txt
 
     # filter bam by contigs
-    samtools view -b ${bam} -L ${prefix}.contigs.txt -o ${meta.id}.bam
+    samtools view -b ${bam} \$(cat ${prefix}.contigs.txt) -o ${prefix}.bam
     samtools index ${prefix}.bam
     """
     stub:

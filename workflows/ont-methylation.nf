@@ -30,8 +30,13 @@ workflow ISOLATE_WORKFLOW {
 
     ch_versions = channel.empty()
 
+    // drop bins 
+    ch_input = ch_samplesheet.map { meta, bam, assembly, _bins ->
+        tuple(meta, bam, assembly)
+    }
+
     // convert methylbam to fastq
-    BAM2FASTQ(ch_samplesheet)
+    BAM2FASTQ(ch_input)
     fastq_ch = BAM2FASTQ.out.files
     ch_versions = ch_versions.mix(BAM2FASTQ.out.versions.first())
     
@@ -76,10 +81,15 @@ workflow META_WORKFLOW {
 
     ch_versions = channel.empty()
 
+    // drop bins 
+    ch_input = ch_samplesheet.map { meta, bam, assembly, _bins ->
+        tuple(meta, bam, assembly)
+    }
+
     // convert methylbam to fastq
-    BAM2FASTQ(ch_samplesheet)
+    BAM2FASTQ(ch_input)
     fastq_ch = BAM2FASTQ.out.files
-    ch_versions = ch_versions.mix(BAM2FASTQ.out.versions.first())
+    ch_versions = ch_versions.mix(BAM2FASTQ.out.versions)
     
     // gzip reads
     // ZIPFASTQ(fastq_ch)
@@ -113,7 +123,7 @@ workflow META_WORKFLOW {
     // tabulate base modification calls across positions
     MODKIT_PILEUP(mapped_filtered_bams_ch)
     pileup_ch = MODKIT_PILEUP.out.files
-    ch_versions = ch_versions.mix(MODKIT_PILEUP.out.versions.first())
+    ch_versions = ch_versions.mix(MODKIT_PILEUP.out.versions)
     
     // generate bedgraphs
     pileup_bedgraphs_ch = MODKIT_PILEUP_BEDGRAPHS(mapped_filtered_bams_ch)
@@ -126,7 +136,6 @@ workflow META_WORKFLOW {
 
     // count statistics and percent bases modified
     statistics_ch = COMPUTE_STATISTICS(pileup_ch)
-
 
     emit:
     pileup = pileup_ch
