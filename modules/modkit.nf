@@ -70,7 +70,7 @@ process CUSTOM_BEDGRAPHS {
 }
 
 process MODKIT_FIND_MOTIFS {
-    label 'modkit_low'
+    label 'modkit'
     label 'process_high'
     publishDir path: { "${params.outdir}/${meta.id}" }, mode:'copy'
     // find motifs from the output of modkit pileup
