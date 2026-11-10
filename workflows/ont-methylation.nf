@@ -52,12 +52,17 @@ workflow ISOLATE_WORKFLOW {
     // count statistics and percent bases modified
     statistics_ch = COMPUTE_STATISTICS(pileup_ch)
 
+    // get tool versions
+    ch_versions = BAM2FASTQ.out.versions
+        .mix(MODKIT_PILEUP.out.versions)
+
     emit:
     pileup = pileup_ch
     bedgraphs = pileup_bedgraphs_ch
     custom_bedgraphs = custom_bedgraphs_ch
     statistics = statistics_ch
     motifs = motifs_ch
+    versions = ch_versions
 
 }
 
@@ -74,7 +79,7 @@ workflow META_WORKFLOW {
     // ZIPFASTQ(fastq_ch)
 
     // map fastq to reference assembly
-    mapped_bams_ch = MINIMAP2(fastq_ch)
+    mapped_bams_ch = MINIMAP2(fastq_ch.out.files)
 
     // Split bams by bin
     bins_ch = mapped_bams_ch.flatMap { meta, bam, index, assembly, bins ->
@@ -101,20 +106,25 @@ workflow META_WORKFLOW {
     pileup_bedgraphs_ch = MODKIT_PILEUP_BEDGRAPHS(mapped_filtered_bams_ch)
     
     // run script that computes which bases are methylated
-    custom_bedgraphs_ch = CUSTOM_BEDGRAPHS(pileup_ch)
+    custom_bedgraphs_ch = CUSTOM_BEDGRAPHS(pileup_ch.out.files)
 
     // find methylated motifs
-    motifs_ch = MODKIT_FIND_MOTIFS(pileup_ch)
+    motifs_ch = MODKIT_FIND_MOTIFS(pileup_ch.out.files)
 
     // count statistics and percent bases modified
-    statistics_ch = COMPUTE_STATISTICS(pileup_ch)
+    statistics_ch = COMPUTE_STATISTICS(pileup_ch.out.files)
+
+    // get tool versions
+    ch_versions = BAM2FASTQ.out.versions
+        .mix(MODKIT_PILEUP.out.versions)
 
     emit:
-    pileup = pileup_ch
+    pileup = pileup_ch.out.files
     bedgraphs = pileup_bedgraphs_ch
     custom_bedgraphs = custom_bedgraphs_ch
     statistics = statistics_ch
     motifs = motifs_ch
+    versions = ch_versions
 
 }
 

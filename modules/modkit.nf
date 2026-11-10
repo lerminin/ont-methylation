@@ -8,12 +8,18 @@ process MODKIT_PILEUP {
     tuple val(meta), path(mapped_bam), path(mapped_bam_bai), path(assembly), path(bins)
 
     output:
-    tuple val(meta), path("modkit_pileup_output.bed"), path(assembly), path(bins)
+    tuple val(meta), path("modkit_pileup_output.bed"), path(assembly), path(bins), emit: files
+    path "versions.yml", emit: versions
 
     script:
     filter_threshold = params.automatic_threshold_modkit ? '' : "--filter-threshold ${params.filter_threshold_modkit}"
     """
     modkit pileup -t ${task.cpus} ${mapped_bam} modkit_pileup_output.bed ${filter_threshold}
+    
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        modkit: \$(modkit --version | head -n 1)
+    END_VERSIONS
     """
     stub:
     """

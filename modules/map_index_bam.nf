@@ -7,11 +7,18 @@ process BAM2FASTQ {
     tuple val(meta), path(bam), path(assembly), path(bins)
 
     output:
-    tuple val(meta), path("${meta.id}.fastq"), path(assembly), path(bins)
+    tuple val(meta), path("${meta.id}.fastq"), path(assembly), path(bins), emit: files
+    path "versions.yml", emit: versions
 
     script:
     """
     samtools fastq ${bam} -T MM,ML > ${meta.id}.fastq
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        samtools: \$(samtools --version | head -n 1)
+        minimap2: \$(minimap2 --version | head -n 1)
+    END_VERSIONS
     """
     stub:
     """
