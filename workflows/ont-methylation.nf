@@ -77,7 +77,16 @@ workflow META_WORKFLOW {
     mapped_bams_ch = MINIMAP2(fastq_ch)
 
     // Split bams by bin
-    bam_bin_pairs = mapped_bams_ch.combine(bins)
+    bins_ch = mapped_bams_ch.map { meta, _bam, _index, _assembly, bins ->
+            tuple(meta.id, bins)
+        }
+
+    // Match mapped BAMs to the correct sample's bins
+    mapped_keyed_ch = mapped_bams_ch.map { meta, bam, index, assembly ->
+        tuple(meta.id, meta, bam, index, assembly)
+    }
+
+    bam_bin_pairs = mapped_keyed_ch.join(bins_ch)
     mapped_filtered_bams_ch = SPLIT_BAM_BY_BIN(bam_bin_pairs)
 
     // tabulate base modification calls across positions

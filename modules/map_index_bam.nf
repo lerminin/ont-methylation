@@ -4,7 +4,7 @@ process BAM2FASTQ {
     label 'process_medium'
 
     input:
-    tuple val(meta), path(bam), path(assembly), path(bins, arity: '0..1')
+    tuple val(meta), path(bam), path(assembly), path(bins)
 
     output:
     tuple val(meta), path("${meta.id}.fastq"), path(assembly), path(bins)
@@ -26,7 +26,7 @@ process ZIPFASTQ {
     publishDir path: { "${params.outdir}/${meta.id}" }, mode:'copy'
         
     input:
-    tuple val(meta), path(fastq_file), path(assembly), path(bins, arity: '0..1')
+    tuple val(meta), path(fastq_file), path(assembly), path(bins)
 
     output:
     tuple val(meta), path("${meta.id}.fastq.gz"), path(assembly), path(bins)
@@ -48,7 +48,7 @@ process MINIMAP2 {
     publishDir path: { "${params.outdir}/${meta.id}" }, mode:'copy'
 
     input:
-    tuple val(meta), path(fastq_file), path(assembly), path(bins, arity: '0..1')
+    tuple val(meta), path(fastq_file), path(assembly), path(bins)
 
     output:
     tuple val(meta), path("${meta.id}_methylation_mapped.bam"), path("${meta.id}_methylation_mapped.bam.bai"), path(assembly), path(bins)
@@ -74,10 +74,10 @@ process SPLIT_BAM_BY_BIN {
     publishDir path: {"${params.outdir}/${meta.id}/bins/${bins.baseName}"}, mode: 'copy'
 
     input:
-    tuple val(meta), path(bam), path(bam_index), path(assembly), path(bins, arity: '0..1')
+    tuple val(meta), path(bam), path(bam_index), path(assembly), path(bins)
 
     output:
-    tuple val(meta), path("${meta.id}.bam"), path("${meta.id}.bam.bai"), path(bins, arity: '0..1')
+    tuple val(meta), path("${meta.id}.bam"), path("${meta.id}.bam.bai"), path(bins)
 
     script:
     """

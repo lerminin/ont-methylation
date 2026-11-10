@@ -33,10 +33,6 @@ workflow PIPELINE_INITIALISATION {
         error "Please provide a sample sheet using --input"
     }
 
-    def required_columns = params.meta
-        ? ['sample', 'bam', 'assembly', 'bins_folder']
-        : ['sample', 'bam', 'assembly']
-
     samples_ch = channel
         .fromPath(params.input, checkIfExists: true)
         .splitCsv(header: true)
@@ -44,14 +40,14 @@ workflow PIPELINE_INITIALISATION {
 
             def meta = [id: row.sample]
 
-            def fasta = file(row.fasta, checkIfExists: true)
             def bam   = file(row.bam, checkIfExists: true)
+            def assembly = file(row.fasta, checkIfExists: true)
 
             def bins = params.meta
                 ? file(row.bins_folder, checkIfExists: true)
                 : null
 
-            tuple(meta, fasta, bam, bins)
+            tuple(meta, bam, assembly, bins)
         }
 
     emit:
