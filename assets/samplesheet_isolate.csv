@@ -1,0 +1,4 @@
+sample,bam,assembly
+barcode01,tests/isolate_test/barcode01.bam,tests/isolate_test/barcode01_reference.fasta
+barcode02,tests/isolate_test/barcode02.bam,tests/isolate_test/barcode02_reference.fasta
+barcode03,tests/isolate_test/barcode03.bam,tests/isolate_test/barcode03_reference.fasta

@@ -1,0 +1,2 @@
+sample,bam,assembly,bins_folder
+metagenome,tests/metagenome.bam,tests/metagenome.fasta,tests/bins_folder/
