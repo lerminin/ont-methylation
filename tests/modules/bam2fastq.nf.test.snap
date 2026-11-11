@@ -1,0 +1,72 @@
+{
+    "Should convert BAM to FASTQ": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "barcode01"
+                        },
+                        "barcode01.fastq:md5,15209428716641d352c39b161ddf94bf",
+                        "barcode01_reference.fasta:md5,e4a05a2192b0060e6834d19d7f5f08d0"
+                    ]
+                ],
+                "1": [
+                    "versions.yml:md5,f40d4e4d99a596ae95e6da3a26fec938"
+                ],
+                "files": [
+                    [
+                        {
+                            "id": "barcode01"
+                        },
+                        "barcode01.fastq:md5,15209428716641d352c39b161ddf94bf",
+                        "barcode01_reference.fasta:md5,e4a05a2192b0060e6834d19d7f5f08d0"
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,f40d4e4d99a596ae95e6da3a26fec938"
+                ]
+            }
+        ],
+        "timestamp": "2026-11-11T12:08:20.721442056",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "25.10.0"
+        }
+    },
+    "Stub run": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "barcode01"
+                        },
+                        "barcode01.fastq:md5,d41d8cd98f00b204e9800998ecf8427e",
+                        "barcode01_reference.fasta:md5,e4a05a2192b0060e6834d19d7f5f08d0"
+                    ]
+                ],
+                "1": [
+                    "versions.yml:md5,9262ca47b43ab2f067a3c168da22b808"
+                ],
+                "files": [
+                    [
+                        {
+                            "id": "barcode01"
+                        },
+                        "barcode01.fastq:md5,d41d8cd98f00b204e9800998ecf8427e",
+                        "barcode01_reference.fasta:md5,e4a05a2192b0060e6834d19d7f5f08d0"
+                    ]
+                ],
+                "versions": [
+                    "versions.yml:md5,9262ca47b43ab2f067a3c168da22b808"
+                ]
+            }
+        ],
+        "timestamp": "2026-11-11T12:08:55.185699359",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "25.10.0"
+        }
+    }
+}
