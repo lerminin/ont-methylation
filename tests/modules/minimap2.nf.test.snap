@@ -1,0 +1,44 @@
+{
+    "Stub run": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "barcode01"
+                        },
+                        "methylation_mapped.bam:md5,d41d8cd98f00b204e9800998ecf8427e",
+                        "methylation_mapped.bam.bai:md5,d41d8cd98f00b204e9800998ecf8427e",
+                        "barcode01_reference.fasta:md5,e4a05a2192b0060e6834d19d7f5f08d0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-11-11T13:33:38.290550607",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "25.10.0"
+        }
+    },
+    "Should produce mapped bam": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "barcode01"
+                        },
+                        "methylation_mapped.bam:md5,b8b780f6f8bb0d388a263bd7471ac8fb",
+                        "methylation_mapped.bam.bai:md5,3608df4dc759c0a104e35e1120e3691f",
+                        "barcode01_reference.fasta:md5,e4a05a2192b0060e6834d19d7f5f08d0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-11-11T13:33:26.360361745",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "25.10.0"
+        }
+    }
+}
