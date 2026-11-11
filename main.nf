@@ -42,7 +42,7 @@ workflow ONT_METHYLATION {
         ch_version_yaml = softwareVersionsToYAML(META_WORKFLOW.out.versions)
         ch_version_yaml.collectFile(
             storeDir: "${params.outdir}/pipeline_info",
-            name:  'software_'  + 'versions.yml',
+            name:  'software_versions.yml',
             newLine: true
         )
 
@@ -52,7 +52,7 @@ workflow ONT_METHYLATION {
         ch_version_yaml = softwareVersionsToYAML(ISOLATE_WORKFLOW.out.versions)
         ch_version_yaml.collectFile(
             storeDir: "${params.outdir}/pipeline_info",
-            name:  'software_'  + 'versions.yml',
+            name:  'software_versions.yml',
             newLine: true
         )
 
@@ -81,11 +81,6 @@ workflow {
         // SUBWORKFLOW: Run initialisation tasks
         //
         PIPELINE_INITIALISATION (
-            // params.version,
-            // params.validate_params,
-            // params.monochrome_logs,
-            // args,
-            // params.outdir,
             params.input
         )
 
@@ -95,12 +90,11 @@ workflow {
         ONT_METHYLATION (
             PIPELINE_INITIALISATION.out.samplesheet
         )
+        
         //
         // SUBWORKFLOW: Run completion tasks
         //
         PIPELINE_COMPLETION (
-            // params.outdir,
-            // params.monochrome_logs,
         )
     }
 }

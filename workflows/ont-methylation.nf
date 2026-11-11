@@ -97,8 +97,25 @@ workflow META_WORKFLOW {
     // map fastq to reference assembly
     mapped_bams_ch = MINIMAP2(fastq_ch)
 
+    // Extract bin folders from the samplesheet, keyed by sample ID
+    sample_bins_ch = ch_samplesheet.map { meta, bam, assembly, bins ->
+        tuple(meta.id, bins)
+    }
+
+    // Key mapped BAMs by sample ID
+    mapped_keyed_ch = mapped_bams_ch.map { meta, bam, index, assembly ->
+        tuple(meta.id, meta, bam, index, assembly)
+    }
+
+    // Join mapped BAMs with their bin folders
+    mapped_with_bins_ch = mapped_keyed_ch
+        .join(sample_bins_ch)
+        .map { sample_id, meta, bam, index, assembly, bins ->
+            tuple(meta, bam, index, assembly, bins)
+        }
+
     // Split bams by bin
-    bins_ch = mapped_bams_ch.flatMap { meta, bam, index, assembly, bins ->
+    bins_ch = mapped_with_bins_ch.flatMap { meta, bam, index, assembly, bins ->
 
         def bin_files = bins.toFile().listFiles()
             ?.findAll { bin -> bin.name ==~ /.*\.(fasta|fa)$/ }
@@ -118,6 +135,7 @@ workflow META_WORKFLOW {
         }
     }
 
+    // split bam file by bin fasta
     mapped_filtered_bams_ch = SPLIT_BAM_BY_BIN(bins_ch)
 
     // tabulate base modification calls across positions

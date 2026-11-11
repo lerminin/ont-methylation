@@ -11,16 +11,14 @@ process COMPUTE_STATISTICS {
     tuple val(meta), path(bed_file), path(assembly)
 
     output:
-    tuple val(meta), path("${prefix}methylation_statistics")
+    tuple val(meta), path("methylation_statistics")
 
     script:
-    prefix = meta.bin_id ? "${meta.id}.${meta.bin_id}_" : ""
     """
-    compute_statistics.py ${bed_file} ${assembly} ${prefix}methylation_statistics
+    compute_statistics.py ${bed_file} ${assembly} methylation_statistics
     """
     stub:
-    prefix = meta.bin_id ? "${meta.id}.${meta.bin_id}_" : ""
     """
-    mkdir -p ${prefix}methylation_statistics    
+    mkdir -p methylation_statistics    
     """
 }
