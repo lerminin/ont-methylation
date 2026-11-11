@@ -1,0 +1,42 @@
+{
+    "Should gzip FASTQ": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "barcode01"
+                        },
+                        "barcode01.fastq.gz:md5,15209428716641d352c39b161ddf94bf",
+                        "barcode01_reference.fasta:md5,e4a05a2192b0060e6834d19d7f5f08d0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-11-11T12:30:31.727685618",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "25.10.0"
+        }
+    },
+    "Stub run": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "barcode01"
+                        },
+                        "barcode01.fastq.gz:md5,d41d8cd98f00b204e9800998ecf8427e",
+                        "barcode01_reference.fasta:md5,e4a05a2192b0060e6834d19d7f5f08d0"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-11-11T12:31:07.982243825",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "25.10.0"
+        }
+    }
+}

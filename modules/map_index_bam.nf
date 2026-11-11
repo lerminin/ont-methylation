@@ -50,7 +50,7 @@ process ZIPFASTQ {
     """
     stub:
     """
-    touch ${meta.id}.fastq.gz
+    gzip -c /dev/null > ${meta.id}.fastq.gz
     """
 }
 
