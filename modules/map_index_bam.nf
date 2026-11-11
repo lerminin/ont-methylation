@@ -88,16 +88,16 @@ process SPLIT_BAM_BY_BIN {
     publishDir path: {"${params.outdir}/${meta.id}/${meta.bin_id}"}, mode: 'copy'
 
     input:
-    tuple val(meta), path(bam), path(bam_index), path(assembly), path(bins_fasta)
+    tuple val(meta), path(bam), path(bam_index), path(assembly), path(bin_fasta)
 
     output:
-    tuple val(meta), path("${prefix}.bam"), path("${prefix}.bam.bai"), path(assembly), path(bins_fasta)
+    tuple val(meta), path("${prefix}.bam"), path("${prefix}.bam.bai"), path(bin_fasta)
 
     script:
     prefix = "${meta.id}.${meta.bin_id}"
     """
     # extract contigs from bin fasta
-    awk '/^>/{gsub(/^>/,""); split(\$1,a," "); print a[1]}' ${bins_fasta} > ${prefix}.contigs.txt
+    awk '/^>/{gsub(/^>/,""); split(\$1,a," "); print a[1]}' ${bin_fasta} > ${prefix}.contigs.txt
 
     # filter bam by contigs
     samtools view -b ${bam} \$(cat ${prefix}.contigs.txt) -o ${prefix}.bam
